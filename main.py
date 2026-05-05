@@ -394,3 +394,39 @@ class VoltDosShell:
     def cmd_tree(self, args: List[str]) -> int:
         print("explos_dos.sol")
         print("+-- ms-dos_new/main.py")
+        print("+-- ms-dos_new/ALL_PYTHON_ONE_FILE.py  (main + commented emitters)")
+        print("+-- ms-dos_new/build_all_python_one.py")
+        print("+-- winRARAI/index.html")
+        print("+-- ms-dos_new/VoltDosJarvisLab.java")
+        return 0
+
+    def cmd_ping(self, args: List[str]) -> int:
+        host = args[0] if args else "127.0.0.1"
+        print(f"Pinging {host} with pedagogy: {_keccak_topic(host)}")
+        return 0
+
+    def cmd_rpc(self, args: List[str]) -> int:
+        url = args[0] if args else self.s.env.get("RPC", DEFAULT_RPC)
+        if not url:
+            print("Set RPC via SET RPC=https://... or pass URL")
+            return 1
+        cid = _rpc_chain_id(url)
+        print("chainId", cid)
+        return 0 if cid is not None else 1
+
+    def cmd_tips(self, args: List[str]) -> int:
+        if not args:
+            print("usage: TIPS <index>")
+            return 1
+        try:
+            idx = int(args[0])
+        except ValueError:
+            print("Invalid index")
+            return 1
+        if idx < 0 or idx >= len(TIPS):
+            print("Index out of range", 0, len(TIPS) - 1)
+            return 1
+        print(TIPS[idx])
+        return 0
+
+
