@@ -286,3 +286,39 @@ class VoltDosShell:
     def cmd_set(self, args: List[str]) -> int:
         if not args:
             for k, v in sorted(self.s.env.items()):
+                print(f"{k}={v}")
+            return 0
+        if "=" in args[0]:
+            k, v = args[0].split("=", 1)
+            self.s.env[k.upper()] = v
+        return 0
+
+    def cmd_help(self, args: List[str]) -> int:
+        topics = sorted(self._cmds.keys())
+        chunk = 8
+        for i in range(0, len(topics), chunk):
+            print(" ".join(topics[i : i + chunk]))
+        return 0
+
+    def cmd_mem(self, args: List[str]) -> int:
+        print("Memory model: Python heap; on-chain analog is transient gas + storage slots.")
+        return 0
+
+    def cmd_trace(self, args: List[str]) -> int:
+        for line in self.s.history[-16:]:
+            print(line)
+        return 0
+
+    def cmd_facet(self, args: List[str]) -> int:
+        if not args:
+            print("usage: FACET <name> [args]")
+            return 1
+        label = args[0].upper()
+        fn = self._cmds.get(label)
+        if fn is None:
+            print("Unknown facet")
+            return 1
+        return fn(args[1:])
+
+    def cmd_gas(self, args: List[str]) -> int:
+        if not args:
