@@ -106,3 +106,39 @@ class VoltSession:
         self.env.setdefault("PROMPT", "VOLT>")
         self.env.setdefault("TRACE", "1")
         self._seed_demo()
+
+    def _seed_demo(self) -> None:
+        for i in range(6):
+            self.lessons[i] = LessonCard(
+                lid=i,
+                title=f"DOS-mitigation facet {i}",
+                gas_hint=21_000 + i * 900,
+                notes="Clamp sums; pace cohort pulses; avoid unbounded callbacks.",
+            )
+        for j in range(4):
+            self.cohorts[j] = CohortCard(cid=j, tag_hex=hex(j * 0xC0FFEE)[2:], cap=16 + j)
+
+
+def _clamp(n: int, lo: int, hi: int) -> int:
+    return max(lo, min(hi, n))
+
+
+def _saturating_add(a: int, b: int) -> Tuple[int, bool]:
+    s = a + b
+    if s < a:
+        return (2**256 - 1, True)
+    return (s, False)
+
+
+def _keccak_topic(label: str) -> str:
+    k = hashlib.sha3_256()
+    k.update(label.encode("utf-8"))
+    return "0x" + k.hexdigest()[:64]
+
+
+def _rpc_chain_id(url: str) -> Optional[int]:
+    body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "eth_chainId", "params": []}).encode()
+    req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            payload = json.loads(resp.read().decode())
