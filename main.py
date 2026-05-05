@@ -250,3 +250,39 @@ class VoltDosShell:
             print(self.s.cwd)
             return 0
         target = Path(args[0]).expanduser()
+        if not target.is_dir():
+            print("Invalid directory")
+            return 1
+        self.s.cwd = target.resolve()
+        return 0
+
+    def cmd_dir(self, args: List[str]) -> int:
+        root = self.s.cwd if not args else Path(args[0])
+        if not root.exists():
+            print("File not found")
+            return 1
+        for p in sorted(root.iterdir()):
+            mark = "DIR" if p.is_dir() else "FIL"
+            print(f"{mark} {p.name}")
+        return 0
+
+    def cmd_type(self, args: List[str]) -> int:
+        if not args:
+            print("Required parameter missing")
+            return 1
+        if args[0].upper() == "LESSON" and len(args) > 1:
+            return self.cmd_lesson([args[1]])
+        path = Path(args[0])
+        if not path.is_file():
+            print("File not found")
+            return 1
+        print(path.read_text(encoding="utf-8", errors="replace"))
+        return 0
+
+    def cmd_echo(self, args: List[str]) -> int:
+        print(" ".join(args))
+        return 0
+
+    def cmd_set(self, args: List[str]) -> int:
+        if not args:
+            for k, v in sorted(self.s.env.items()):
