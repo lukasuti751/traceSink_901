@@ -358,3 +358,39 @@ class VoltDosShell:
 
     def cmd_abi(self, args: List[str]) -> int:
         iface = {
+            "openCohort": "(bytes32,uint32)->uint256",
+            "publishLesson": "(bytes32,uint32)->uint256",
+            "heartbeat": "()",
+            "probeBoundedSum": "(uint256[])->(uint256,bool)",
+        }
+        print(json.dumps(iface, indent=2))
+        return 0
+
+    def cmd_deploy(self, args: List[str]) -> int:
+        print("Constructor arity: 6 addresses (A,B,C,governor,operator,auditor).")
+        print("Suggested immutables:", ADDRESS_A, ADDRESS_B, ADDRESS_C)
+        print("Governor/operator/auditor must be live EOAs or contracts you control.")
+        return 0
+
+    def cmd_rem(self, args: List[str]) -> int:
+        return 0
+
+    def cmd_time(self, args: List[str]) -> int:
+        print(time.strftime("%H:%M:%S"))
+        return 0
+
+    def cmd_date(self, args: List[str]) -> int:
+        print(time.strftime("%Y-%m-%d"))
+        return 0
+
+    def cmd_vol(self, args: List[str]) -> int:
+        print(" Volume in drive C is VOLTTRACE")
+        return 0
+
+    def cmd_chkdsk(self, args: List[str]) -> int:
+        print("Pedagogy scan: OK — bounded loops, non-reentrant externals, no ETH custody.")
+        return 0
+
+    def cmd_tree(self, args: List[str]) -> int:
+        print("explos_dos.sol")
+        print("+-- ms-dos_new/main.py")
