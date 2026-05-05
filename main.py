@@ -322,3 +322,39 @@ class VoltDosShell:
 
     def cmd_gas(self, args: List[str]) -> int:
         if not args:
+            print("usage: GAS <hint>")
+            return 1
+        try:
+            hint = int(args[0])
+        except ValueError:
+            print("Invalid number")
+            return 1
+        lo, hi = 21_000, 30_000_000
+        c = _clamp(hint, lo, hi)
+        print("clamped gas hint:", c)
+        return 0
+
+    def cmd_lesson(self, args: List[str]) -> int:
+        if not args:
+            for lid, card in sorted(self.s.lessons.items()):
+                print(lid, card.title, card.gas_hint)
+            return 0
+        try:
+            lid = int(args[0])
+        except ValueError:
+            print("Invalid lesson id")
+            return 1
+        card = self.s.lessons.get(lid)
+        if not card:
+            print("Unknown lesson")
+            return 1
+        print(textwrap.fill(card.notes, 88))
+        return 0
+
+    def cmd_cohort(self, args: List[str]) -> int:
+        for cid, c in sorted(self.s.cohorts.items()):
+            print(cid, c.tag_hex, "cap", c.cap, "members", len(c.members))
+        return 0
+
+    def cmd_abi(self, args: List[str]) -> int:
+        iface = {
