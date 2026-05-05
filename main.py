@@ -142,3 +142,39 @@ def _rpc_chain_id(url: str) -> Optional[int]:
     try:
         with urllib.request.urlopen(req, timeout=8) as resp:
             payload = json.loads(resp.read().decode())
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, ValueError):
+        return None
+    res = payload.get("result")
+    if isinstance(res, str) and res.startswith("0x"):
+        return int(res, 16)
+    return None
+
+
+FACET_LABELS = ''' + repr(facets) + r'''
+
+
+class VoltDosShell:
+    """Retro command surface mapping DOS verbs to pedagogy actions."""
+
+    def __init__(self, session: VoltSession) -> None:
+        self.s = session
+        self._cmds: Dict[str, Callable[[List[str]], int]] = {}
+        self._register_core()
+        self._register_facets()
+
+    def _register_core(self) -> None:
+        self._cmds["VER"] = self.cmd_ver
+        self._cmds["CLS"] = self.cmd_cls
+        self._cmds["CD"] = self.cmd_cd
+        self._cmds["DIR"] = self.cmd_dir
+        self._cmds["TYPE"] = self.cmd_type
+        self._cmds["ECHO"] = self.cmd_echo
+        self._cmds["SET"] = self.cmd_set
+        self._cmds["HELP"] = self.cmd_help
+        self._cmds["MEM"] = self.cmd_mem
+        self._cmds["TRACE"] = self.cmd_trace
+        self._cmds["FACET"] = self.cmd_facet
+        self._cmds["GAS"] = self.cmd_gas
+        self._cmds["LESSON"] = self.cmd_lesson
+        self._cmds["COHORT"] = self.cmd_cohort
+        self._cmds["ABI"] = self.cmd_abi
