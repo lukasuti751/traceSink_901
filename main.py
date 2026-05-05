@@ -70,3 +70,39 @@ DEFAULT_RPC = os.environ.get("VOLT_RPC_URL", "")
 ADDRESS_A = "0x352F4Aee77Fd288EA8F977b7418bb0402e5EF709"
 ADDRESS_B = "0x46acda232073817355080066FB593fc3DE858078"
 ADDRESS_C = "0x6c7cA6dA7FD60AAbCF155B1d4D8AdbEb18c32773"
+
+'''
+
+core += tips_literal + "\n"
+
+core += textwrap.dedent(
+    '''
+@dataclass
+class LessonCard:
+    lid: int
+    title: str
+    gas_hint: int
+    notes: str = ""
+
+
+@dataclass
+class CohortCard:
+    cid: int
+    tag_hex: str
+    cap: int
+    members: List[str] = field(default_factory=list)
+
+
+@dataclass
+class VoltSession:
+    cwd: Path = field(default_factory=lambda: Path.cwd())
+    history: List[str] = field(default_factory=list)
+    lessons: Dict[int, LessonCard] = field(default_factory=dict)
+    cohorts: Dict[int, CohortCard] = field(default_factory=dict)
+    env: Dict[str, str] = field(default_factory=dict)
+    rng: random.Random = field(default_factory=lambda: random.Random(DRILL_SEED))
+
+    def __post_init__(self) -> None:
+        self.env.setdefault("PROMPT", "VOLT>")
+        self.env.setdefault("TRACE", "1")
+        self._seed_demo()
