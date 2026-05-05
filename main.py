@@ -178,3 +178,39 @@ class VoltDosShell:
         self._cmds["LESSON"] = self.cmd_lesson
         self._cmds["COHORT"] = self.cmd_cohort
         self._cmds["ABI"] = self.cmd_abi
+        self._cmds["DEPLOY"] = self.cmd_deploy
+        self._cmds["REM"] = self.cmd_rem
+        self._cmds["TIME"] = self.cmd_time
+        self._cmds["DATE"] = self.cmd_date
+        self._cmds["VOL"] = self.cmd_vol
+        self._cmds["CHKDSK"] = self.cmd_chkdsk
+        self._cmds["TREE"] = self.cmd_tree
+        self._cmds["PING"] = self.cmd_ping
+        self._cmds["RPC"] = self.cmd_rpc
+        self._cmds["TIPS"] = self.cmd_tips
+
+    def _register_facets(self) -> None:
+        for i, label in enumerate(FACET_LABELS):
+            self._cmds[label] = self._make_facet_handler(label, i)
+
+    def _make_facet_handler(self, label: str, idx: int) -> Callable[[List[str]], int]:
+        def _handler(args: List[str]) -> int:
+            salt = (DRILL_SEED ^ idx * 0x9E3779B97F4A7C15) & ((1 << 64) - 1)
+            print(f"[{label}] trace", _keccak_topic(f"{label.lower()}:{salt:x}"))
+            if args:
+                joined = " ".join(args)
+                acc, sat = _saturating_add(len(joined), idx)
+                print(" sum probe:", acc, "saturated" if sat else "ok")
+            return 0
+
+        return _handler
+
+    def run_line(self, raw: str) -> int:
+        raw = raw.strip()
+        if not raw:
+            return 0
+        self.s.history.append(raw)
+        try:
+            parts = shlex.split(raw)
+        except ValueError as e:
+            print("ERR:", e)
