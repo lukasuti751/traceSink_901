@@ -214,3 +214,39 @@ class VoltDosShell:
             parts = shlex.split(raw)
         except ValueError as e:
             print("ERR:", e)
+            return 1
+        verb = parts[0].upper()
+        args = parts[1:]
+        fn = self._cmds.get(verb)
+        if fn is None:
+            print(f"Bad command or file name: {verb}")
+            return 1
+        return fn(args)
+
+    def repl(self) -> None:
+        prompt = self.s.env.get("PROMPT", "VOLT>")
+        while True:
+            try:
+                line = input(prompt + " ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print("^C")
+                break
+            if line.upper() in {"EXIT", "QUIT"}:
+                break
+            self.run_line(line)
+
+    def cmd_ver(self, args: List[str]) -> int:
+        print("ms-dos_new [VoltTrace pedagogical shell]")
+        print(" trace_version", hex(TRACE_VERSION))
+        print(" anchors", ADDRESS_A, ADDRESS_B, ADDRESS_C)
+        return 0
+
+    def cmd_cls(self, args: List[str]) -> int:
+        print("\\033[2J\\033[H", end="")
+        return 0
+
+    def cmd_cd(self, args: List[str]) -> int:
+        if not args:
+            print(self.s.cwd)
+            return 0
+        target = Path(args[0]).expanduser()
