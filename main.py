@@ -430,3 +430,38 @@ class VoltDosShell:
         return 0
 
 
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description="ms-dos_new Volt pedagogy shell")
+    p.add_argument("--lesson", type=int, help="print lesson card")
+    p.add_argument("--rpc", default=DEFAULT_RPC, help="optional RPC for eth_chainId probe")
+    p.add_argument("--winrarai-open", action="store_true", help="print file URI for winRARAI UI")
+    return p
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    args = build_parser().parse_args(argv)
+    if args.winrarai_open:
+        here = Path(__file__).resolve().parent.parent / "winRARAI" / "index.html"
+        print("Open in browser:", here.as_uri())
+        return 0
+    sess = VoltSession()
+    sh = VoltDosShell(sess)
+    if args.lesson is not None:
+        return sh.run_line(f"TYPE LESSON {args.lesson}")
+    if args.rpc:
+        sess.env["RPC"] = args.rpc
+    if not sys.stdin.isatty():
+        for line in sys.stdin:
+            sh.run_line(line)
+        return 0
+    sh.repl()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+'''
+)
+
+OUT.write_text(core, encoding="utf-8")
+print("wrote", len(core.splitlines()), "lines")
