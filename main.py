@@ -34,3 +34,39 @@ for b in bases:
     for j in range(22):
         facets.append(f"{b}{j}")
 
+tips = []
+for i in range(920):
+    t = topics[i % len(topics)]
+    tips.append(
+        f"{i:04d}: {t}; facet echo {facets[i % len(facets)]} salt {hex((0xC0FFEE ^ i * 1315423911) & 0xFFFFFFFF)}"
+    )
+
+tips_literal = "TIPS: Tuple[str, ...] = (\n" + ",\n".join(repr(t) for t in tips) + "\n)\n"
+
+core = '''# -*- coding: utf-8 -*-
+"""ms-dos_new — VoltTrace / explos_dos pedagogy shell (AI hack learning tool)."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import random
+import shlex
+import sys
+import textwrap
+import time
+import urllib.error
+import urllib.request
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Callable, Dict, List, Optional, Tuple
+
+TRACE_VERSION = 0x7A3C91F0E4B2D816
+DRILL_SEED = 0x4F2E9C1A7B5583D4
+DEFAULT_RPC = os.environ.get("VOLT_RPC_URL", "")
+
+ADDRESS_A = "0x352F4Aee77Fd288EA8F977b7418bb0402e5EF709"
+ADDRESS_B = "0x46acda232073817355080066FB593fc3DE858078"
+ADDRESS_C = "0x6c7cA6dA7FD60AAbCF155B1d4D8AdbEb18c32773"
